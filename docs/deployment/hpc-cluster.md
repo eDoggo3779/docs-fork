@@ -79,6 +79,18 @@ export CLIO_IPC_MODE=TCP
 
 This variable is read by `CLIO_RUNTIME_INIT()`. If unset, the value of the `default_with_runtime` argument passed to `CLIO_RUNTIME_INIT()` is used instead.
 
+### Cloud Storage Credentials
+
+If the config has an `s3` or `gcs` storage tier, or CAE imports from `s3://` / `gs://`, the **runtime daemon on every node** needs the cloud credentials in its own environment: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_DEFAULT_REGION` (plus `S3_ENDPOINT` for MinIO), or `GCS_ACCESS_TOKEN`. Exporting them in the job script is not always enough. Launchers that start the daemons over SSH (pssh, Jarvis) pass a curated environment rather than your shell's, so make sure the variables reach each node's `clio_run start`. With Jarvis, list them in the runtime package's `forward_env`.
+
+```bash
+export AWS_ACCESS_KEY_ID=...        # keep keys out of committed scripts
+export AWS_SECRET_ACCESS_KEY=...
+export AWS_DEFAULT_REGION=us-east-2 # the bucket's real region
+```
+
+See [Configuration → Cloud object stores](./configuration#cloud-object-stores) for every variable and which component reads it.
+
 ---
 
 ## Single-Node Deployment
