@@ -64,8 +64,6 @@ src: s3://my-bucket/climate/TERRA_2024.bin
 src: gs://my-bucket/climate/TERRA_2024.bin
 ```
 
-Cloud sources (`s3://`, `gs://`) carry no credentials in the OMNI file. They are resolved inside the runtime daemon from its environment, so export them where `clio_run` starts, not where `clio_cae` runs.
-
 ### `dst` (string, required)
 The destination URI specifying where to write data. Currently supports the `iowarp` scheme for CTE tag-based storage.
 

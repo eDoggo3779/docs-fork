@@ -6,7 +6,7 @@ sidebar_position: 1
 
 ## Introduction
 
-The Context Assimilation Engine (CAE) is a CLIO Runtime module (`clio_cae::core`) that ingests external data sources into the CLIO Runtime. It reads data from files, HDF5 datasets, or remote Globus endpoints and stores them as blobs in the Context Transfer Engine (CTE). The CAE is registered as a Module container with pool ID `400.0`.
+The Context Assimilation Engine (CAE) is a CLIO Runtime module (`clio_cae::core`) that ingests external data sources into the CLIO Runtime. It reads data from files, HDF5 datasets, remote Globus endpoints, or Amazon S3 buckets and stores them as blobs in the Context Transfer Engine (CTE). The CAE is registered as a Module container with pool ID `400.0`.
 
 CAE ships a second, optional ChiMod: the **summarizer** (`clio_cae_summarizer`, pool `401.0`). It interposes on the CTE core's task interface and attaches an LLM-generated summary to each matching blob on the way through. See [the interposition chain](../context-transfer-engine/chimod-chain#summarizer-chimod-clio_cae_summarizer) for its behavior and [deployment configuration](../../deployment/configuration) for its keys.
 
@@ -75,10 +75,6 @@ The CAE uses a factory pattern to select the correct assimilator based on the so
 | `s3` | `s3://<bucket>/<key>` | `S3FileAssimilator` | `-DCAE_ENABLE_S3=ON` |
 | `gs` / `gcs` | `gs://<bucket>/<object>` | `GcsFileAssimilator` | `-DCAE_ENABLE_GCS=ON` |
 
-When a protocol's build flag is off, the factory logs `... support not compiled in. Rebuild with -D<flag>=ON` and returns no assimilator.
-
-The factory is constructed by the CAE runtime with its CTE client and, when S3 support is built, a runtime-owned S3 connection pool that `S3FileAssimilator` borrows keep-alive connections from.
-
 The factory also detects Globus web URLs (`https://app.globus.org/...`) and routes them to `GlobusFileAssimilator`.
 
 Protocol extraction supports two URI styles:
@@ -140,7 +136,7 @@ struct AssimilationCtx {
 }  // namespace clio::cae::core
 ```
 
-`s3_region` and `s3_profile` are used only by `S3FileAssimilator`. When set, `s3_region` overrides `AWS_DEFAULT_REGION` / `AWS_REGION`, and `s3_profile` overrides `AWS_PROFILE`. A key pair in the runtime's environment still wins over any profile. They carry names, never secrets: the keys themselves stay in the runtime's environment or credentials file. OMNI files do not set them; they are for programmatic callers that build `AssimilationCtx` directly.
+`s3_region` and `s3_profile` are used only by `S3FileAssimilator`. When set, `s3_region` overrides `AWS_DEFAULT_REGION` / `AWS_REGION`, and `s3_profile` overrides `AWS_PROFILE`. A key pair in the runtime's environment still wins over any profile. OMNI files do not set them; they are for programmatic callers that build `AssimilationCtx` directly.
 
 Serialization uses the [cereal](https://uscilab.github.io/cereal/) library with binary archives. The client serializes a `std::vector<AssimilationCtx>` into the `ParseOmniTask`, and the runtime deserializes it on the server side.
 
@@ -340,10 +336,8 @@ class MyAssimilator : public clio::cae::core::BaseAssimilator {
 |-------------|---------|-------------|
 | `WRP_CORE_ENABLE_HDF5` | OFF | Enable HDF5 assimilator (requires libhdf5) |
 | `CAE_ENABLE_GLOBUS` | OFF | Enable Globus assimilator (requires POCO) |
-| `CAE_ENABLE_S3` | OFF | Enable S3 assimilator (requires POCO for the in-process read path **and** the AWS SDK for C++ for the `cae_s3_tool` helper). Spack: `+s3_cae`. |
-| `CAE_ENABLE_GCS` | OFF | Enable GCS assimilator (requires `google-cloud-cpp` storage). Spack: `+gcs`. |
-
-The S3 and GCS **storage tiers** (block devices) are separate features with their own flags (`CLIO_ENABLE_AMAZON_DRIVE`, `CLIO_ENABLE_GOOGLE_CLOUD`). See [Configuration → Cloud object-store block devices](../../deployment/configuration#cloud-bdevs).
+| `CAE_ENABLE_S3` | OFF | Enable S3 assimilator (requires POCO and the AWS SDK). |
+| `CAE_ENABLE_GCS` | OFF | Enable GCS assimilator (requires `google-cloud-cpp` storage) |
 
 ## Related Documentation
 

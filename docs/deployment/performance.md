@@ -81,7 +81,6 @@ Scoring is typically set based on performance.
 - Use RAM tiers (`bdev_type: ram`) for critical high-priority data with `score: 1.0` (most selective, most precious)
 - Add NVMe/SSD tiers for balanced selectivity with `score: 0.3-0.7`
 - Use HDDs as overflow tiers with `score: 0.0` (least selective, accepts any data)
-- Treat cloud tiers (`bdev_type: s3` / `gcs`) as the coldest overflow tier, with a low score below every local tier. Each block is a separate object and each access is a network round trip, so they trade latency for capacity. Put a RAM or NVMe tier in front of them. See [Cloud object-store block devices](./configuration#cloud-bdevs).
 - Align `capacity_limit` with available hardware capacity
 - Multiple tiers with the same score will be used with equal priority
 

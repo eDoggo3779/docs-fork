@@ -1248,7 +1248,7 @@ These are the values the config parser accepts; anything else is rejected at loa
 - `"s3"` - Amazon S3 or S3-compatible bucket; `path` is `s3://<bucket>/<prefix>`
 - `"gcs"` - Google Cloud Storage bucket; `path` is `gcs://<bucket>/<prefix>`
 
-The cloud types need a runtime built with `CLIO_ENABLE_AMAZON_DRIVE` / `CLIO_ENABLE_GOOGLE_CLOUD`, and credentials in the runtime's environment. See [Configuration → Cloud object-store block devices](../../deployment/configuration#cloud-bdevs).
+The cloud types need a runtime built with `CLIO_ENABLE_AMAZON_DRIVE` / `CLIO_ENABLE_GOOGLE_CLOUD`, and credentials in the runtime's environment. See [Configuration → Cloud object stores](../../deployment/configuration#cloud-object-stores).
 
 ### Manual Tier Scoring
 
