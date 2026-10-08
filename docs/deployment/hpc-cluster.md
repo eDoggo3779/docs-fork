@@ -89,12 +89,6 @@ This variable is read by `CLIO_RUNTIME_INIT()`. If unset, the value of the `defa
 | `S3_ENDPOINT` | *(AWS)* | S3-compatible endpoint, e.g. MinIO. |
 | `GCS_ACCESS_TOKEN` | *(none)* | OAuth2 bearer token, for `gcs` storage tiers. |
 
-```bash
-export AWS_ACCESS_KEY_ID=...
-export AWS_SECRET_ACCESS_KEY=...
-export AWS_DEFAULT_REGION=us-east-2 # the bucket's real region
-```
-
 See [Configuration → Cloud object stores](./configuration#cloud-object-stores) for every variable and which component reads it.
 
 ---
